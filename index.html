@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Motoboys</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <div class="brand">🍕 Controle de Motoboys</div>
+        <div class="subtitle">Despachos e rotas do turno</div>
+      </div>
+      <div class="shift-box">
+        <span id="shiftStatus" class="badge">Turno</span>
+        <strong id="currentDate">--/--/----</strong>
+        <small>15:00 → 02:00</small>
+      </div>
+    </header>
+
+    <main>
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span>Despachadas</span>
+          <strong id="statDispatched">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Aguardando retorno</span>
+          <strong id="statPending">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Confirmadas</span>
+          <strong id="statConfirmed">0</strong>
+        </div>
+        <div class="stat-card">
+          <span>Total confirmado</span>
+          <strong id="statTotal">R$ 0,00</strong>
+        </div>
+      </section>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-title">
+            <div>
+              <h2>Nova despachada</h2>
+              <p>Registre os bairros e a quantidade de pedidos.</p>
+            </div>
+          </div>
+
+          <form id="dispatchForm">
+            <label>Motoboy</label>
+            <select id="motoboySelect" required></select>
+
+            <div class="route-header">
+              <span>Bairro</span>
+              <span>Pedidos</span>
+              <span></span>
+            </div>
+
+            <div id="routeRows"></div>
+
+            <button type="button" id="addRouteBtn" class="btn btn-secondary full">+ Adicionar bairro</button>
+
+            <label>Observação <span class="optional">(opcional)</span></label>
+            <textarea id="observation" rows="3" placeholder="Ex.: levar troco, pedido prioritário, ligar antes..."></textarea>
+
+            <div class="total-preview">
+              <span>Total da despachada</span>
+              <strong id="routeTotal">R$ 0,00</strong>
+            </div>
+
+            <button type="submit" class="btn btn-primary full">🚀 Despachar motoboy</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <div>
+              <h2>Motoboys</h2>
+              <p>Total confirmado no turno.</p>
+            </div>
+            <button id="settingsBtn" class="icon-btn" title="Configurações">⚙️</button>
+          </div>
+          <div id="ridersBoard" class="riders-board"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="panel-title">
+          <div>
+            <h2>Despachadas</h2>
+            <p>Amarelo = aguardando retorno · Verde = retorno confirmado.</p>
+          </div>
+          <button id="clearDayBtn" class="btn btn-danger">Encerrar / limpar dia</button>
+        </div>
+        <div id="dispatchList" class="dispatch-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2>Configurações</h2>
+          <p>Edite os motoboys e valores dos bairros.</p>
+        </div>
+        <button id="closeSettings" class="icon-btn">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Motoboys</h3>
+        <div id="riderSettings"></div>
+        <div class="inline-form">
+          <input id="newRider" placeholder="Nome do motoboy">
+          <button id="addRiderBtn" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Bairros e valores</h3>
+        <div id="neighborhoodSettings"></div>
+        <div class="inline-form neighborhood-add">
+          <input id="newNeighborhood" placeholder="Nome do bairro">
+          <input id="newNeighborhoodPrice" type="number" step="0.01" min="0" placeholder="Valor">
+          <button id="addNeighborhoodBtn" class="btn btn-primary">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="js/app.js"></script>
+</body>
+</html>
