@@ -198,6 +198,7 @@ function renderDispatches() {
 
   list.innerHTML = dispatches.map(d => {
     const routes = d.routes.map(r => `${escapeHtml(r.neighborhood)} (${r.qty})`).join(" · ");
+    const orderCount = d.routes.reduce((sum, r) => sum + (Number(r.qty) || 0), 0);
     const confirmed = d.status === "confirmed";
     return `
       <article class="dispatch-card ${confirmed ? "confirmed" : ""}">
@@ -205,7 +206,7 @@ function renderDispatches() {
           <div>
             <div class="dispatch-title">🏍️ ${escapeHtml(d.motoboy)}</div>
             <div class="route-text">${routes}</div>
-            <div class="route-count">🏘️ ${d.routes.length} bairro${d.routes.length === 1 ? "" : "s"}</div>
+            <div class="route-count">📦 ${orderCount} pedido${orderCount === 1 ? "" : "s"}</div>
           </div>
           <div class="dispatch-actions">
             <span class="status ${confirmed ? "confirmed" : "pending"}">
