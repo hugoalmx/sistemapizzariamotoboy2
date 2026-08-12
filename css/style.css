@@ -226,11 +226,16 @@ input:focus, select:focus, textarea:focus {
 .status.pending { background: #f59e0b; color: #fff; }
 .status.confirmed { background: #16a34a; color: #fff; }
 .dispatch-actions { display: flex; gap: 8px; align-items: flex-start; }
-.edit-dispatch-btn {
+.edit-dispatch-btn, .delete-dispatch-btn {
   width: 32px;
   height: 32px;
   border-radius: 8px;
   flex-shrink: 0;
+}
+.delete-dispatch-btn {
+  border-color: #fecaca;
+  background: #fff1f2;
+  color: #be123c;
 }
 .payment-tag {
   margin-top: 8px;

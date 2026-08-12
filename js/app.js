@@ -211,6 +211,7 @@ function renderDispatches() {
               ${confirmed ? "✓ RETORNO CONFIRMADO" : "⏳ AGUARDANDO RETORNO"}
             </span>
             <button type="button" class="icon-btn edit-dispatch-btn" title="Editar despachada" data-id="${escapeHtml(d.id)}">✏️</button>
+            <button type="button" class="icon-btn delete-dispatch-btn" title="Excluir despachada" data-id="${escapeHtml(d.id)}">🗑️</button>
           </div>
         </div>
         ${d.payment ? `<div class="payment-tag">${paymentLabel(d.payment)}</div>` : ""}
@@ -234,6 +235,19 @@ function renderDispatches() {
   document.querySelectorAll(".edit-dispatch-btn").forEach(btn => {
     btn.addEventListener("click", () => openEditDispatch(btn.dataset.id));
   });
+  document.querySelectorAll(".delete-dispatch-btn").forEach(btn => {
+    btn.addEventListener("click", () => deleteDispatch(btn.dataset.id));
+  });
+}
+
+function deleteDispatch(id) {
+  const dispatch = data.dispatches.find(d => d.id === id);
+  if (!dispatch) return;
+  if (!confirm(`Excluir a despachada de ${dispatch.motoboy}?`)) return;
+  data.dispatches = data.dispatches.filter(d => d.id !== id);
+  saveData();
+  renderAll();
+  toast("Despachada excluída.");
 }
 
 function renderAll() {
