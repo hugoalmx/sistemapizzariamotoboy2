@@ -143,6 +143,24 @@ input:focus, select:focus, textarea:focus {
 .btn-secondary { background: #f3f4f6; color: #374151; }
 .btn-danger { background: #fee2e2; color: var(--danger); }
 .full { width: 100%; margin-top: 10px; }
+.payment-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.payment-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 11px;
+  font-weight: 700;
+  color: #374151;
+}
+.payment-btn.active {
+  border-color: var(--primary);
+  background: rgba(225, 29, 72, .08);
+  color: var(--primary-dark);
+}
 .total-preview {
   display: flex;
   justify-content: space-between;
@@ -207,6 +225,18 @@ input:focus, select:focus, textarea:focus {
 }
 .status.pending { background: #f59e0b; color: #fff; }
 .status.confirmed { background: #16a34a; color: #fff; }
+.dispatch-actions { display: flex; gap: 8px; align-items: flex-start; }
+.edit-dispatch-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.payment-tag {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #4b5563;
+}
 .route-text { margin-top: 9px; color: #374151; }
 .dispatch-bottom {
   display: flex;

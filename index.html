@@ -63,6 +63,12 @@
 
             <button type="button" id="addRouteBtn" class="btn btn-secondary full">+ Adicionar bairro</button>
 
+            <label>Forma de pagamento <span class="optional">(opcional)</span></label>
+            <div id="paymentGroup" class="payment-group">
+              <button type="button" class="payment-btn" data-value="maquineta">💳 Maquineta</button>
+              <button type="button" class="payment-btn" data-value="dinheiro">💵 Troco/Dinheiro</button>
+            </div>
+
             <label>Observação <span class="optional">(opcional)</span></label>
             <textarea id="observation" rows="3" placeholder="Ex.: levar troco, pedido prioritário, ligar antes..."></textarea>
 
@@ -128,6 +134,50 @@
           <button id="addNeighborhoodBtn" class="btn btn-primary">Adicionar</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="editDispatchModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2>Editar despachada</h2>
+          <p>Ajuste o motoboy, bairros e pagamento.</p>
+        </div>
+        <button id="closeEditDispatch" class="icon-btn">✕</button>
+      </div>
+
+      <form id="editDispatchForm">
+        <input type="hidden" id="editDispatchId">
+        <label>Motoboy</label>
+        <select id="editMotoboySelect" required></select>
+
+        <div class="route-header">
+          <span>Bairro</span>
+          <span>Pedidos</span>
+          <span></span>
+        </div>
+
+        <div id="editRouteRows"></div>
+
+        <button type="button" id="editAddRouteBtn" class="btn btn-secondary full">+ Adicionar bairro</button>
+
+        <label>Forma de pagamento <span class="optional">(opcional)</span></label>
+        <div id="editPaymentGroup" class="payment-group">
+          <button type="button" class="payment-btn" data-value="maquineta">💳 Maquineta</button>
+          <button type="button" class="payment-btn" data-value="dinheiro">💵 Troco/Dinheiro</button>
+        </div>
+
+        <label>Observação <span class="optional">(opcional)</span></label>
+        <textarea id="editObservation" rows="3" placeholder="Ex.: levar troco, pedido prioritário, ligar antes..."></textarea>
+
+        <div class="total-preview">
+          <span>Total da despachada</span>
+          <strong id="editRouteTotal">R$ 0,00</strong>
+        </div>
+
+        <button type="submit" class="btn btn-primary full">💾 Salvar alterações</button>
+      </form>
     </div>
   </div>
 

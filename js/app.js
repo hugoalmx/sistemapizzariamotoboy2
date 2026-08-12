@@ -1,7 +1,7 @@
 const STORAGE_KEY = "pizzaria_motoboy_v1";
 
 const DEFAULT_DATA = {
-  motoboys: ["João", "Pedro", "Carlos", "Marcos"],
+  motoboys: ["Joao vitor", "Guga", "Gustavo", "Harley", "Matheus Grande", "Matheus Pequeno", "Jefferson", "Douglas", "Luan"],
   bairros: {
     "Bancários": 10,
     "Manaíra": 10,
@@ -86,36 +86,64 @@ function routeRowHtml(selected = "", qty = 1) {
   `;
 }
 
-function renderMotoboySelect() {
-  const select = document.getElementById("motoboySelect");
+function renderMotoboySelect(selectId = "motoboySelect", selected = "") {
+  const select = document.getElementById(selectId);
   select.innerHTML = data.motoboys.length
-    ? data.motoboys.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join("")
+    ? data.motoboys.map(n => `<option value="${escapeHtml(n)}" ${n === selected ? "selected" : ""}>${escapeHtml(n)}</option>`).join("")
     : `<option value="">Cadastre um motoboy</option>`;
 }
 
-function addRouteRow(selected = "", qty = 1) {
-  const rows = document.getElementById("routeRows");
+function addRouteRow(selected = "", qty = 1, rowsId = "routeRows", totalId = "routeTotal") {
+  const rows = document.getElementById(rowsId);
   rows.insertAdjacentHTML("beforeend", routeRowHtml(selected, qty));
   rows.lastElementChild.querySelector(".remove-route").addEventListener("click", e => {
     const row = e.currentTarget.closest(".route-row");
-    if (document.querySelectorAll(".route-row").length > 1) row.remove();
+    if (rows.querySelectorAll(".route-row").length > 1) row.remove();
     else toast("A despachada precisa ter pelo menos um bairro.");
-    calculateRouteTotal();
+    calculateRouteTotal(rowsId, totalId);
   });
-  rows.lastElementChild.querySelector(".neighborhood-select").addEventListener("change", calculateRouteTotal);
-  rows.lastElementChild.querySelector(".qty-input").addEventListener("input", calculateRouteTotal);
-  calculateRouteTotal();
+  rows.lastElementChild.querySelector(".neighborhood-select").addEventListener("change", () => calculateRouteTotal(rowsId, totalId));
+  rows.lastElementChild.querySelector(".qty-input").addEventListener("input", () => calculateRouteTotal(rowsId, totalId));
+  calculateRouteTotal(rowsId, totalId);
 }
 
-function calculateRouteTotal() {
+function calculateRouteTotal(rowsId = "routeRows", totalId = "routeTotal") {
   let total = 0;
-  document.querySelectorAll(".route-row").forEach(row => {
+  document.getElementById(rowsId).querySelectorAll(".route-row").forEach(row => {
     const neighborhood = row.querySelector(".neighborhood-select").value;
     const qty = Math.max(0, parseInt(row.querySelector(".qty-input").value || "0", 10));
     total += (Number(data.bairros[neighborhood]) || 0) * qty;
   });
-  document.getElementById("routeTotal").textContent = money(total);
+  document.getElementById(totalId).textContent = money(total);
   return total;
+}
+
+function setupPaymentToggle(groupId) {
+  const group = document.getElementById(groupId);
+  group.querySelectorAll(".payment-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const alreadyActive = btn.classList.contains("active");
+      group.querySelectorAll(".payment-btn").forEach(b => b.classList.remove("active"));
+      if (!alreadyActive) btn.classList.add("active");
+    });
+  });
+}
+
+function getPaymentValue(groupId) {
+  const active = document.querySelector(`#${groupId} .payment-btn.active`);
+  return active ? active.dataset.value : "";
+}
+
+function setPaymentValue(groupId, value) {
+  document.querySelectorAll(`#${groupId} .payment-btn`).forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.value === value);
+  });
+}
+
+function paymentLabel(value) {
+  if (value === "maquineta") return "💳 Maquineta";
+  if (value === "dinheiro") return "💵 Troco/Dinheiro";
+  return "";
 }
 
 function renderStats() {
@@ -178,10 +206,14 @@ function renderDispatches() {
             <div class="dispatch-title">🏍️ ${escapeHtml(d.motoboy)}</div>
             <div class="route-text">${routes}</div>
           </div>
-          <span class="status ${confirmed ? "confirmed" : "pending"}">
-            ${confirmed ? "✓ RETORNO CONFIRMADO" : "⏳ AGUARDANDO RETORNO"}
-          </span>
+          <div class="dispatch-actions">
+            <span class="status ${confirmed ? "confirmed" : "pending"}">
+              ${confirmed ? "✓ RETORNO CONFIRMADO" : "⏳ AGUARDANDO RETORNO"}
+            </span>
+            <button type="button" class="icon-btn edit-dispatch-btn" title="Editar despachada" data-id="${escapeHtml(d.id)}">✏️</button>
+          </div>
         </div>
+        ${d.payment ? `<div class="payment-tag">${paymentLabel(d.payment)}</div>` : ""}
         ${d.observation ? `<div class="observation">📝 ${escapeHtml(d.observation)}</div>` : ""}
         <div class="dispatch-bottom">
           <div>
@@ -198,6 +230,9 @@ function renderDispatches() {
 
   document.querySelectorAll(".confirm-btn").forEach(btn => {
     btn.addEventListener("click", () => confirmDispatch(btn.dataset.id));
+  });
+  document.querySelectorAll(".edit-dispatch-btn").forEach(btn => {
+    btn.addEventListener("click", () => openEditDispatch(btn.dataset.id));
   });
 }
 
@@ -219,6 +254,60 @@ function confirmDispatch(id) {
   renderAll();
   toast(`${dispatch.motoboy} confirmado! ${money(dispatch.total)} entrou no total.`);
 }
+
+function openEditDispatch(id) {
+  const dispatch = data.dispatches.find(d => d.id === id);
+  if (!dispatch) return;
+
+  document.getElementById("editDispatchId").value = dispatch.id;
+  renderMotoboySelect("editMotoboySelect", dispatch.motoboy);
+
+  document.getElementById("editRouteRows").innerHTML = "";
+  dispatch.routes.forEach(r => addRouteRow(r.neighborhood, r.qty, "editRouteRows", "editRouteTotal"));
+
+  setPaymentValue("editPaymentGroup", dispatch.payment || "");
+  document.getElementById("editObservation").value = dispatch.observation || "";
+  calculateRouteTotal("editRouteRows", "editRouteTotal");
+
+  document.getElementById("editDispatchModal").classList.remove("hidden");
+}
+
+document.getElementById("closeEditDispatch").addEventListener("click", () => {
+  document.getElementById("editDispatchModal").classList.add("hidden");
+});
+
+document.getElementById("editAddRouteBtn").addEventListener("click", () => addRouteRow("", 1, "editRouteRows", "editRouteTotal"));
+
+document.getElementById("editDispatchForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const id = document.getElementById("editDispatchId").value;
+  const dispatch = data.dispatches.find(d => d.id === id);
+  if (!dispatch) return;
+
+  const routes = [...document.querySelectorAll("#editRouteRows .route-row")].map(row => ({
+    neighborhood: row.querySelector(".neighborhood-select").value,
+    qty: Math.max(1, parseInt(row.querySelector(".qty-input").value || "1", 10))
+  })).filter(r => r.neighborhood);
+
+  if (!routes.length) {
+    toast("Adicione pelo menos um bairro.");
+    return;
+  }
+
+  const total = routes.reduce((sum, r) => sum + (Number(data.bairros[r.neighborhood]) || 0) * r.qty, 0);
+
+  dispatch.motoboy = document.getElementById("editMotoboySelect").value;
+  dispatch.routes = routes;
+  dispatch.observation = document.getElementById("editObservation").value.trim();
+  dispatch.payment = getPaymentValue("editPaymentGroup");
+  dispatch.total = total;
+
+  saveData();
+  document.getElementById("editDispatchModal").classList.add("hidden");
+  renderAll();
+  toast("Despachada atualizada.");
+});
 
 document.getElementById("dispatchForm").addEventListener("submit", e => {
   e.preventDefault();
@@ -251,6 +340,7 @@ document.getElementById("dispatchForm").addEventListener("submit", e => {
     motoboy: document.getElementById("motoboySelect").value,
     routes,
     observation: document.getElementById("observation").value.trim(),
+    payment: getPaymentValue("paymentGroup"),
     total,
     status: "pending",
     time: now.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}),
@@ -261,11 +351,14 @@ document.getElementById("dispatchForm").addEventListener("submit", e => {
   e.target.reset();
   document.getElementById("routeRows").innerHTML = "";
   addRouteRow();
+  setPaymentValue("paymentGroup", "");
   renderAll();
   toast("Despachada registrada e marcada como aguardando retorno.");
 });
 
 document.getElementById("addRouteBtn").addEventListener("click", () => addRouteRow());
+setupPaymentToggle("paymentGroup");
+setupPaymentToggle("editPaymentGroup");
 
 document.getElementById("settingsBtn").addEventListener("click", () => {
   document.getElementById("settingsModal").classList.remove("hidden");
