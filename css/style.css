@@ -243,6 +243,12 @@ input:focus, select:focus, textarea:focus {
   color: #4b5563;
 }
 .route-text { margin-top: 9px; color: #374151; }
+.route-count {
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
 .dispatch-bottom {
   display: flex;
   justify-content: space-between;

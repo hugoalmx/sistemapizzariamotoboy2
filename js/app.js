@@ -205,6 +205,7 @@ function renderDispatches() {
           <div>
             <div class="dispatch-title">🏍️ ${escapeHtml(d.motoboy)}</div>
             <div class="route-text">${routes}</div>
+            <div class="route-count">🏘️ ${d.routes.length} bairro${d.routes.length === 1 ? "" : "s"}</div>
           </div>
           <div class="dispatch-actions">
             <span class="status ${confirmed ? "confirmed" : "pending"}">
